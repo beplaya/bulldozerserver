@@ -39,7 +39,7 @@ public class ChatLauncher {
 
         server.addConnectListener(new ConnectListener() {
             @Override
-            public void onConnect(SocketIOClient socketIOClient) {
+            public void onConnect(final SocketIOClient socketIOClient) {
                 log("@@@@@@@@@ Client connected! @@@@@@@@@");
                 new Thread(new Runnable() {
                     @Override

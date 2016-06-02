@@ -84,18 +84,25 @@ public class ChatLauncher {
         }
     }
 
-    private static void sendEventToClientsInSameRoom(SocketIOClient socketIOClient, String data, String eventString, SocketIOServer server) {
-        String roomKey = findRoomForUUID(socketIOClient.getSessionId());
-        List<UUID> clientIds = rooms.get(roomKey);
-        Iterator<SocketIOClient> iterator = server.getAllClients().iterator();
-        for (UUID uuid : clientIds) {
-            SocketIOClient client = iterator.next();
-            if (client.getSessionId().equals(uuid)
-                    && !client.getSessionId().equals(socketIOClient.getSessionId())) {
-                log("client.sendEvent(eventString, data)");
-                client.sendEvent(eventString, data);
+    private static void sendEventToClientsInSameRoom(final SocketIOClient socketIOClient,
+                                                     final String data,
+                                                     final String eventString,
+                                                     final SocketIOServer server) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String roomKey = findRoomForUUID(socketIOClient.getSessionId());
+                List<UUID> clientIds = rooms.get(roomKey);
+                Iterator<SocketIOClient> iterator = server.getAllClients().iterator();
+                for (UUID uuid : clientIds) {
+                    SocketIOClient client = iterator.next();
+                    if (client.getSessionId().equals(uuid)
+                            && !client.getSessionId().equals(socketIOClient.getSessionId())) {
+                        client.sendEvent(eventString, data);
+                    }
+                }
             }
-        }
+        }).start();
     }
 
     private static void log(String s) {

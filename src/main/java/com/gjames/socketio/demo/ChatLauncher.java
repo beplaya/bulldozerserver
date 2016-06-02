@@ -26,14 +26,14 @@ public class ChatLauncher {
         server.addEventListener("SEND_BALL_VECTOR_POSITION", String.class, new DataListener<String>() {
             @Override
             public void onData(SocketIOClient socketIOClient, String ballRecVectorPosition, AckRequest ackRequest) throws Exception {
-                setEventToClientsInSameRoom(socketIOClient, ballRecVectorPosition, "REC_BALL_VECTOR_POSITION", server);
+                sendEventToClientsInSameRoom(socketIOClient, ballRecVectorPosition, "REC_BALL_VECTOR_POSITION", server);
             }
         });
 
         server.addEventListener("SEND_VECTOR_POSITION", String.class, new DataListener<String>() {
             @Override
             public void onData(SocketIOClient socketIOClient, String recVectorPosition, AckRequest ackRequest) throws Exception {
-                setEventToClientsInSameRoom(socketIOClient, recVectorPosition, "REC_VECTOR_POSITION", server);
+                sendEventToClientsInSameRoom(socketIOClient, recVectorPosition, "REC_VECTOR_POSITION", server);
             }
         });
 
@@ -54,6 +54,7 @@ public class ChatLauncher {
         server.addDisconnectListener(new DisconnectListener() {
             @Override
             public void onDisconnect(final SocketIOClient socketIOClient) {
+                log("%%%%%%%%%%%%% Client DISCONNECTED! %%%%%%%%%%%%%");
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -83,7 +84,7 @@ public class ChatLauncher {
         }
     }
 
-    private static void setEventToClientsInSameRoom(SocketIOClient socketIOClient, String data, String eventString, SocketIOServer server) {
+    private static void sendEventToClientsInSameRoom(SocketIOClient socketIOClient, String data, String eventString, SocketIOServer server) {
         String roomKey = findRoomForUUID(socketIOClient.getSessionId());
         List<UUID> clientIds = rooms.get(roomKey);
         Iterator<SocketIOClient> iterator = server.getAllClients().iterator();
@@ -91,6 +92,7 @@ public class ChatLauncher {
             SocketIOClient client = iterator.next();
             if (client.getSessionId().equals(uuid)
                     && !client.getSessionId().equals(socketIOClient.getSessionId())) {
+                log("client.sendEvent(eventString, data)");
                 client.sendEvent(eventString, data);
             }
         }

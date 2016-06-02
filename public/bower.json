@@ -1,0 +1,24 @@
+{
+  "name": "alfbot",
+  "version": "0.0.0",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.5",
+    "socket.io": "~1.4.5",
+    "socket.io-client": "~1.4.5",
+    "angular-sanitize": "~1.4.9"
+  },
+  "devDependencies": {
+    "angular-mocks": "^1.5.5",
+    "jasmine-core": "jasmine#^2.4.1"
+  },
+  "resolutions": {
+    "angular": "1.5.5"
+  }
+}

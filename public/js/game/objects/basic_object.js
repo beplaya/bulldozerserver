@@ -1,4 +1,3 @@
-
 function BasicObject(id) {
 
     this.id = id;
@@ -7,7 +6,7 @@ function BasicObject(id) {
     this.drag = 0;
     this.hitRadius = 10;
     this.target;
-
+    this.basicObject.drawer = new BasicObjectDrawer(this, "#fff");
     this.vector = new Vector();
 
     this.setTarget = function(target) {
@@ -49,8 +48,15 @@ function BasicObject(id) {
             this.vector.position.x *= -1;
         }
     }
+    this.onCollide = function(basicObject) {
+        if(this.collideEventHandler) {
+            this.collideEventHandler(basicObject);
+        }
+    }
 
-    this.getBasicObjectDrawer = function() {}
+    this.getBasicObjectDrawer = function() {
+        return this.drawer;
+    }
 
     this.getHitRadius = function() {
         return this.hitRadius;
@@ -71,8 +77,6 @@ function BasicObject(id) {
     this.getVector = function() {
         return this.vector;
     }
-
-    this.onCollide = function(basicObject) {}
 
     this.setPosition = function(position) {
         this.position = position;

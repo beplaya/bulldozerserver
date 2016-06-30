@@ -4,11 +4,6 @@ function SocketManager(){
         var self = this;
         this.socketIO = socketIO;
         SocketManager.deviceId = Math.random()+""+Math.random();
-        for (var i=0; i<SocketManager.listeners.length; i++) {
-            SocketManager.listeners[i].onConnected();
-        }
-
-        this.createConnectionStatusEventListeners();
 
         //
         this.socketIO.on(SocketManager.JOINED_ROOM, function(jsonObject) {
@@ -31,16 +26,6 @@ function SocketManager(){
             }
         });
         //
-    }
-
-    this.createConnectionStatusEventListeners = function() {
-        var self = this;
-        this.socketIO.on('disconnect', function(jsonObject) {
-            SocketManager.isConnected = false;
-        });
-        this.socketIO.on('connected', function(jsonObject) {
-            SocketManager.isConnected = true;
-        });
     }
 
     this.sendPositionAndVector = function(position, vector) {

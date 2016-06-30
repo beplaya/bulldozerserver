@@ -1,6 +1,9 @@
 
 var app = angular.module('bigsocket', ['ngSanitize']);
 
+app.playVm = new PlayVm();
+app.playVm.onCreate();
+
 app.run(['$rootScope', function($rootScope){
    $rootScope.version = 1.0;
 }]);
@@ -9,12 +12,20 @@ app.run(['$rootScope', function($rootScope){
 app.controller('socketController', ['$scope','$rootScope', 'socket',
                     function($scope, $rootScope, socket) {
     $scope.socket = socket;
+    SocketManager.getInstance().initSocket($scope.socket);
     $scope.connected = false;
     $scope.socket.on('connect', function() {
             $scope.connected = true;
+            SocketManager.isConnected = true;
+            for (var i=0; i<SocketManager.listeners.length; i++) {
+                SocketManager.listeners[i].onConnected();
+            }
+            app.playVm.onResume();
 		});
     $scope.socket.on('disconnect', function() {
             $scope.connected = false;
+            SocketManager.isConnected = false;
+            app.playVm.onPause();
 		});
 
 }]);

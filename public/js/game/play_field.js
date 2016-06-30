@@ -1,7 +1,5 @@
 function PlayField() {
 
-    PlayField.dimensions = new Point(1, 1);
-
     this.playController;
 
     this.setPlayController = function(playController) {
@@ -26,8 +24,10 @@ function PlayField() {
         }
     }
 
-    PlayField.getAbsolutePosition(position) {
-        return new Point(PlayField.dimensions.x * (position.x / 100f), PlayField.dimensions.y * (position.y / 100f));
-    }
+}
 
+PlayField.dimensions = new Point(1, 1);
+
+PlayField.getAbsolutePosition(position) {
+    return new Point(PlayField.dimensions.x * (position.x / 100f), PlayField.dimensions.y * (position.y / 100f));
 }

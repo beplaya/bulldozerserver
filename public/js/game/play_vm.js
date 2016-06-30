@@ -1,4 +1,4 @@
-function PlayVm {
+function PlayVm() {
 
     this.basicObjects = [];
     this.playField;
@@ -33,7 +33,6 @@ function PlayVm {
         this.balls.add(new Ball(5, 80, 50));
         this.basicObjects = this.basicObjects.concat(balls);
         SocketManager.registerListener(new MultiplayManager(this));
-        SocketManager.connect();
     }
 
     this.onResume = function() {

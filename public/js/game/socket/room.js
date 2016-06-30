@@ -1,4 +1,5 @@
 function Room(id) {
+
     this.id = id;
     this.playerNumber;
 
@@ -10,8 +11,9 @@ function Room(id) {
         return this.playerNumber;
     }
 
-    Room.JSON {
-        id : "roomId",
-        playerNumber : "playerNumber"
-    }
+}
+
+Room.JSON = {
+    id : "roomId",
+    playerNumber : "playerNumber"
 }

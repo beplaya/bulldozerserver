@@ -2,10 +2,6 @@ function Collisioner(playController) {
 
     this.playController = playController;
 
-    Collisioner.Wall = {
-        LEFT:0, TOP:1, RIGHT:2, BOTTOM:3
-    }
-
     this.update = function() {
         //basic objects list
         var bos = playController.getAll();
@@ -51,4 +47,9 @@ function Collisioner(playController) {
         }
         return false;
     }
+}
+
+
+Collisioner.Wall = {
+    LEFT:0, TOP:1, RIGHT:2, BOTTOM:3
 }

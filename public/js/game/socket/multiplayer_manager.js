@@ -1,4 +1,4 @@
-public class MultiplayManager(playVm) {
+function MultiplayManager(playVm) {
 
     this.playVm = playVm;
 

@@ -14,9 +14,14 @@ function PlayField() {
     }
 
     this.onDraw = function(canvas, width, height) {
+        var ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
         PlayField.dimensions.x = width;
         PlayField.dimensions.y = height;
         //canvas.drawColor(Color.BLACK);
+
+
         if (this.playController != null) {
             var bos = this.playController.getAll();
             for (var i=0; i<bos.length; i++) {

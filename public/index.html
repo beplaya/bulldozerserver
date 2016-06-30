@@ -9,7 +9,7 @@
 </head>
 <body class="">
 <div ng-controller="socketController">
-    {{connected}}
+    {{connected}}{{ [ getRoomId() ] }}
     <div style="position: absolute; left:20px; top:20px; background-color:#999999;">
         <canvas id="myCanvas" width="800" height="600" style="border:0px solid #ff0000;"></canvas>
     </div>

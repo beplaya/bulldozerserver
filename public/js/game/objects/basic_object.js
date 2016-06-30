@@ -42,9 +42,9 @@ function BasicObject(id) {
 
     this.onWallCollide = function(wall) {
         this.target = null;
-        if (wall.equals(Collisioner.Wall.TOP) || wall.equals(Collisioner.Wall.BOTTOM)) {
+        if (wall == Collisioner.Wall.TOP || wall == Collisioner.Wall.BOTTOM) {
             this.vector.position.y *= -1;
-        } else if (wall.equals(Collisioner.Wall.LEFT) || wall.equals(Collisioner.Wall.RIGHT)) {
+        } else if (wall == Collisioner.Wall.LEFT || wall == Collisioner.Wall.RIGHT) {
             this.vector.position.x *= -1;
         }
     }

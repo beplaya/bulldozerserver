@@ -6,22 +6,23 @@ function Collisioner(playController) {
         //basic objects list
         var bos = playController.getAll();
         for (var i = 0; i < bos.length; i++) {
-            var wall = this.detectWall(bos.get(i));
+            var wall = this.detectWall(bos[i]);
             if (wall != null) {
-                bos.get(i).basicObject.onWallCollide(wall);
+                bos[i].basicObject.onWallCollide(wall);
             }
-            for (var j = 0; j < bos.size(); j++) {
+            for (var j = 0; j < bos.length; j++) {
                 if (i != j) {
-                    if (this.doesCollide(bos.get(i), bos.get(j))) {
-                        bos.get(i).basicObject.onCollide(bos.get(j).basicObject);
-                        bos.get(j).basicObject.onCollide(bos.get(i).basicObject);
+                    if (this.doesCollide(bos[i], bos[j])) {
+                        bos[i].basicObject.onCollide(bos[j].basicObject);
+                        bos[j].basicObject.onCollide(bos[i].basicObject);
                     }
                 }
             }
         }
     }
 
-    this.detectWall = function(basicObject) {
+    this.detectWall = function(onScreenObject) {
+        var basicObject = onScreenObject.basicObject;
         var percentPosition = basicObject.getPosition();
         var offset = 5;
         if (percentPosition.x < offset) {
@@ -37,12 +38,12 @@ function Collisioner(playController) {
     }
 
     this.doesCollide = function(a, b) {
-        var ap = PlayField.getAbsolutePosition(a.getPosition());
-        var bp = PlayField.getAbsolutePosition(b.getPosition());
+        var ap = PlayField.getAbsolutePosition(a.basicObject.getPosition());
+        var bp = PlayField.getAbsolutePosition(b.basicObject.getPosition());
         var dx = Math.abs(ap.x - bp.x);
         var dy = Math.abs(ap.y - bp.y);
         var h = Math.sqrt((dx * dx) + (dy * dy));
-        if (h <= a.getHitRadius() || h <= b.getHitRadius()) {
+        if (h <= a.basicObject.getHitRadius() || h <= b.basicObject.getHitRadius()) {
             return true;
         }
         return false;

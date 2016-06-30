@@ -6,7 +6,7 @@ function PlayVm() {
     this.collisioner;
     this.otherPlayer;
     this.balls;
-    this.period = 33;
+    this.period = 500;
 
     this.onCreate = function() {
         this.canvas = document.getElementById("myCanvas");
@@ -49,18 +49,21 @@ function PlayVm() {
     }
 
     this.onTimerTick = function() {
-        if (SocketManager.isConnected() && SocketManager.inRoom()) {
+        //if (SocketManager.isConnected && SocketManager.inRoom()) {
+        if (SocketManager.isConnected) {
             this.playField.onDraw(this.canvas, this.canvas.width, this.canvas.height);
 
             for (var i=0; i<this.basicObjects.length; i++) {
                 this.basicObjects[i].basicObject.update();
             }
 
-            this.collisioner.update();
-            SocketManager.getInstance().sendPositionAndVector(this.player.getPosition(), this.player.getVector());
-            if (SocketManager.getRoom().getPlayerNumber() == 0) {
-                for (var i=0; i<this.balls.length; i++) {
-                    SocketManager.getInstance().sendBallPosition(this.balls[i]);
+            if(SocketManager.getRoom()) {
+                this.collisioner.update();
+                SocketManager.getInstance().sendPositionAndVector(this.player.basicObject.getPosition(), this.player.basicObject.getVector());
+                if (SocketManager.getRoom().getPlayerNumber() == 0) {
+                    for (var i=0; i<this.balls.length; i++) {
+                        SocketManager.getInstance().sendBallPosition(this.balls[i].basicObject);
+                    }
                 }
             }
         }

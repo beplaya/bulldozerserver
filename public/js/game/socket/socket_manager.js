@@ -5,40 +5,43 @@ function SocketManager(){
         this.socketIO = socketIO;
         SocketManager.deviceId = Math.random()+""+Math.random();
 
-        //
-        this.socketIO.on(SocketManager.JOINED_ROOM, function(jsonObject) {
+        this.socketIO.on(SocketManager.Events.JOINED_ROOM, function(jsonObject) {
+            jsonObject = JSON.parse(jsonObject);
             SocketManager.room = new Room(jsonObject[Room.JSON.id]);
             SocketManager.room.setPlayerNumber(jsonObject[Room.JSON.playerNumber]);
             for (var i=0; i<SocketManager.listeners.length; i++) {
-                SocketManager.listeners[i].onEvent(SocketManager.JOINED_ROOM, SocketManager.room);
+                SocketManager.listeners[i].onEvent(SocketManager.Events.JOINED_ROOM, SocketManager.room);
+            }
+            console.log(SocketManager.Events.JOINED_ROOM, SocketManager.room.id);
+        });
+
+        this.socketIO.on(SocketManager.Events.REC_VECTOR_POSITION, function(jsonObject) {
+            for (var i=0; i<SocketManager.listeners.length; i++) {
+                SocketManager.listeners[i].onEvent(SocketManager.Events.REC_VECTOR_POSITION, jsonObject);
             }
         });
 
-        this.socketIO.on(SocketManager.REC_VECTOR_POSITION, function(jsonObject) {
+        this.socketIO.on(SocketManager.Events.REC_BALL_VECTOR_POSITION, function(jsonObject) {
             for (var i=0; i<SocketManager.listeners.length; i++) {
-                SocketManager.listeners[i].onEvent(SocketManager.REC_VECTOR_POSITION, jsonObject);
-            }
-        });
-
-        this.socketIO.on(SocketManager.REC_BALL_VECTOR_POSITION, function(jsonObject) {
-            for (var i=0; i<SocketManager.listeners.length; i++) {
-                SocketManager.listeners[i].onEvent(SocketManager.REC_BALL_VECTOR_POSITION, jsonObject);
+                SocketManager.listeners[i].onEvent(SocketManager.Events.REC_BALL_VECTOR_POSITION, jsonObject);
             }
         });
         //
     }
 
     this.sendPositionAndVector = function(position, vector) {
-        this.sendCommand(SocketManager.SEND_VECTOR_POSITION, SocketManager.room.id,
-            position.x, position.y,
-            vector.magnitude, vector.angle,
-            vector.position.x, vector.position.y);
+        if(SocketManager.room) {
+            this.sendCommand(SocketManager.Events.SEND_VECTOR_POSITION, SocketManager.room.id,
+                position.x, position.y,
+                vector.magnitude, vector.angle,
+                vector.position.x, vector.position.y);
+        }
     }
 
     this.sendBallPosition = function(ball) {
         var position = ball.getPosition();
         var vector = ball.getVector();
-        this.sendCommand(SocketManager.SEND_BALL_VECTOR_POSITION,
+        this.sendCommand(SocketManager.Events.SEND_BALL_VECTOR_POSITION,
             SocketManager.room.id,
             ball.id,
             position.x, position.y,
@@ -95,7 +98,6 @@ SocketManager.registerListener = function(listener) {
 SocketManager.clearListeners = function() {
     SocketManager.listeners = [];
 }
-
 
 SocketManager.getRoom = function() {
     return SocketManager.room;

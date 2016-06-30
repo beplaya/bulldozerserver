@@ -14,10 +14,10 @@ public class ChatLauncher {
         SocketConfig sockConfig = new SocketConfig();
         sockConfig.setReuseAddress(true);
         config.setSocketConfig(sockConfig);
-        config.setOrigin("*");
+        //config.setOrigin("*");
 //        config.setHostname("192.168.1.69");
         config.setHostname("10.206.4.56");
-        config.setPort(8080);
+        config.setPort(9092);
         for (int i = 0; i < 1000; i++) {
             rooms.put("room" + i, new ArrayList<UUID>());
         }
@@ -45,8 +45,8 @@ public class ChatLauncher {
                     @Override
                     public void run() {
                         RoomJoin roomJoin = assignToRoom(socketIOClient);
-                        socketIOClient.sendEvent("JOINED_ROOM", "{roomId:" + roomJoin.roomId
-                                + ", playerNumber: " + roomJoin.playerNumber + "}");
+                        socketIOClient.sendEvent("JOINED_ROOM", "{\"roomId\":\"" + roomJoin.roomId
+                                + "\", \"playerNumber\": \"" + roomJoin.playerNumber + "\"}");
                     }
                 }).start();
             }

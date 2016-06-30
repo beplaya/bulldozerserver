@@ -12,11 +12,13 @@ app.run(['$rootScope', function($rootScope){
 app.controller('socketController', ['$scope','$rootScope', 'socket',
                     function($scope, $rootScope, socket) {
     $scope.socket = socket;
-    SocketManager.getInstance().initSocket($scope.socket);
     $scope.connected = false;
     $scope.socket.on('connect', function() {
             $scope.connected = true;
+            SocketManager.getInstance().initSocket($scope.socket);
+
             SocketManager.isConnected = true;
+
             for (var i=0; i<SocketManager.listeners.length; i++) {
                 SocketManager.listeners[i].onConnected();
             }
@@ -27,7 +29,9 @@ app.controller('socketController', ['$scope','$rootScope', 'socket',
             SocketManager.isConnected = false;
             app.playVm.onPause();
 		});
-
+    $scope.getRoomId = function(){
+        return SocketManager.getRoom() ? SocketManager.getRoom().id + ":" + SocketManager.getRoom().playerNumber : "...";
+    }
 }]);
 
 //..
@@ -37,7 +41,7 @@ app.factory('socket', function ($rootScope) {
 
 function Socket($rootScope){
     this.$rootScope = $rootScope;
-    this.socket = io.connect('http://localhost:9092');
+    this.socket = io.connect('http://10.206.4.56:9092');
     this.on = function (eventName, callback) {
             var self = this;
             self.socket.on(eventName, function () {

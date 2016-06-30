@@ -9,12 +9,10 @@ function Target(xOrPosition, y) {
         this.position.y = y;
     }
 
-    this.getVector(absPosition, speed) {
-        Vector vector = new Vector();
-
+    this.getVector = function(absPosition, speed) {
+        var vector = new Vector();
 
         var dx = this.position.x - absPosition.x;
-
         var dy = this.position.y - absPosition.y;
 
         vector.angle = Math.atan(dy / dx);

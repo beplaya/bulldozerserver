@@ -28,6 +28,6 @@ function PlayField() {
 
 PlayField.dimensions = new Point(1, 1);
 
-PlayField.getAbsolutePosition(position) {
-    return new Point(PlayField.dimensions.x * (position.x / 100f), PlayField.dimensions.y * (position.y / 100f));
+PlayField.getAbsolutePosition = function(position) {
+    return new Point(PlayField.dimensions.x * (position.x / 100), PlayField.dimensions.y * (position.y / 100));
 }

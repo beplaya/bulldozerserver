@@ -14,13 +14,13 @@ function SocketManager(){
             }
         });
 
-        this.socketIO.on(SocketManagerREC_VECTOR_POSITION, function(jsonObject) {
+        this.socketIO.on(SocketManager.REC_VECTOR_POSITION, function(jsonObject) {
             for (var i=0; i<SocketManager.listeners.length; i++) {
                 SocketManager.listeners[i].onEvent(SocketManager.REC_VECTOR_POSITION, jsonObject);
             }
         });
 
-        this.socketIO.on(REC_BALL_VECTOR_POSITION, function(jsonObject) {
+        this.socketIO.on(SocketManager.REC_BALL_VECTOR_POSITION, function(jsonObject) {
             for (var i=0; i<SocketManager.listeners.length; i++) {
                 SocketManager.listeners[i].onEvent(SocketManager.REC_BALL_VECTOR_POSITION, jsonObject);
             }

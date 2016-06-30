@@ -8,7 +8,7 @@ function PlayVm() {
     this.balls;
     this.period = 33;
 
-    this.onCreate() {
+    this.onCreate = function() {
         this.canvas = document.getElementById("myCanvas");
 
         this.playField = new PlayField();
@@ -16,22 +16,22 @@ function PlayVm() {
         this.player = new BullDozer(BullDozer.LOCAL_PLAYER);
         this.otherPlayer = new BullDozer(BullDozer.REMOTE_PLAYER);
 
-        this.otherPlayer.basicObject.getBasicObjectDrawer().setColor(Color.CYAN);
+        this.otherPlayer.basicObject.getBasicObjectDrawer().setColor("#00f");
         this.collisioner = new Collisioner(this);
 
         this.player.basicObject.getPosition().set(0, 0);
         this.otherPlayer.basicObject.getPosition().set(0, 0);
 
-        this.basicObjects.add(player);
-        this.basicObjects.add(otherPlayer);
-        this.balls = new ArrayList<>();
+        this.basicObjects.push(this.player);
+        this.basicObjects.push(this.otherPlayer);
+        this.balls = [];
 
-        this.balls.add(new Ball(1, 20, 50));
-        this.balls.add(new Ball(2, 40, 50));
-        this.balls.add(new Ball(3, 50, 50));
-        this.balls.add(new Ball(4, 60, 50));
-        this.balls.add(new Ball(5, 80, 50));
-        this.basicObjects = this.basicObjects.concat(balls);
+        this.balls.push(new Ball(1, 20, 50));
+        this.balls.push(new Ball(2, 40, 50));
+        this.balls.push(new Ball(3, 50, 50));
+        this.balls.push(new Ball(4, 60, 50));
+        this.balls.push(new Ball(5, 80, 50));
+        this.basicObjects = this.basicObjects.concat(this.balls);
         SocketManager.registerListener(new MultiplayManager(this));
     }
 
@@ -86,12 +86,12 @@ function PlayVm() {
         console.log("||onJoinedRoom--> player number: " + playerNumber + " Room: " + SocketManager.getRoom().id);
     }
 
-    this.onReceiveOtherPlayerVectorAndPosition(position, vector) {
+    this.onReceiveOtherPlayerVectorAndPosition = function(position, vector) {
         this.otherPlayer.setPosition(position);
         this.otherPlayer.setVector(vector);
     }
 
-    this.onReceiveBallVectorAndPosition(ballId, position, vector, ownerNumber) {
+    this.onReceiveBallVectorAndPosition = function(ballId, position, vector, ownerNumber) {
         if (SocketManager.getRoom().getPlayerNumber() != 0) {
             for (var i=0; i<this.balls.length; i++) {
                 if (ballId.equals(this.balls[i].id)) {

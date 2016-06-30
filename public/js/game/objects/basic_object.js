@@ -6,7 +6,7 @@ function BasicObject(id) {
     this.drag = 0;
     this.hitRadius = 10;
     this.target;
-    this.basicObject.drawer = new BasicObjectDrawer(this, "#fff");
+    this.drawer = new BasicObjectDrawer(this, "#fff");
     this.vector = new Vector();
 
     this.setTarget = function(target) {

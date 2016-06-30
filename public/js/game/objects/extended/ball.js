@@ -10,7 +10,7 @@ function Ball(id, x, y) {
     this.basicObject.collideEventHandler = function(basicObject) {
     }
 
-    this.onHitByDozer(owner, vector, color) {
+    this.onHitByDozer = function(owner, vector, color) {
         this.basicObject.vector.angle = vector.angle;
         this.basicObject.vector.position.x = vector.position.x;
         this.basicObject.vector.position.y = vector.position.y;

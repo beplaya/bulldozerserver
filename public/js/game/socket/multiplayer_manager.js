@@ -3,11 +3,11 @@ public class MultiplayManager(playVm) {
     this.playVm = playVm;
 
     this.onConnected = function() {
-
+        console.log('onConnected');
     }
 
     this.onDisconnected = function() {
-
+        console.log('onDisconnected');
     }
 
     this.onEvent = function(event, o) {
@@ -33,33 +33,33 @@ public class MultiplayManager(playVm) {
     }
 
 
-    private void onReceiveOtherPlayerVectorAndPosition(Object o) {
+    this.onReceiveOtherPlayerVectorAndPosition = function(o) {
         //roomid, position.x, position.y, vector.magnitude, vector.angle, vector.position.x, vector.position.y
-        String csv = o.toString();
-        String[] split = csv.split(",");
-        int start = 1;
-        PointF position = getPosition(start, split);
-        Vector vector = getVector(start, split);
-        playVm.onReceiveOtherPlayerVectorAndPosition(position, vector);
+        var csv = o.toString();
+        var split = csv.split(",");
+        var start = 1;
+        var position = this.getPosition(start, split);
+        var vector = this.getVector(start, split);
+        this.playVm.onReceiveOtherPlayerVectorAndPosition(position, vector);
     }
 
-    private Vector getVector(int start, String[] split) {
-        Vector vector = new Vector();
-        vector.magnitude = Float.parseFloat(split[start + 2]);
-        vector.angle = Float.parseFloat(split[start + 3]);
-        vector.position.x = Float.parseFloat(split[start + 4]);
-        vector.position.y = Float.parseFloat(split[start + 5]);
+    this.getVector = function(start, split) {
+        var vector = new Vector();
+        vector.magnitude = 1 * split[start + 2];
+        vector.angle = 1 * split[start + 3];
+        vector.position.x = 1 * split[start + 4];
+        vector.position.y = 1 * split[start + 5];
         return vector;
     }
 
-    private PointF getPosition(int start, String[] split) {
-        PointF position = new PointF();
-        position.x = Float.parseFloat(split[start]);
-        position.y = Float.parseFloat(split[start + 1]);
+    this.getPosition = function(start, split) {
+        var position = new Point();
+        position.x = 1 * split[start];
+        position.y = 1 * split[start + 1];
         return position;
     }
 
-    private int getOwner(int start, String[] split) {
-        return Integer.parseInt(split[start + 6]);
+    this.getOwner = function(start, split) {
+        return 1 * split[start + 6];
     }
 }

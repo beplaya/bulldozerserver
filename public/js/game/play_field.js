@@ -7,14 +7,15 @@ function PlayField() {
     }
 
     this.onTouchEvent = function(x, y) {
+        x = 100*x/PlayField.dimensions.x;
+        y = 100*y/PlayField.dimensions.y;
+        //console.log(x, y);
         this.playController.onTargetSelected(new Target(x, y));
     }
 
     this.onDraw = function(canvas, width, height) {
-        if (PlayField.dimensions.x == 1) {
-            PlayField.dimensions.x = width;
-            PlayField.dimensions.y = height;
-        }
+        PlayField.dimensions.x = width;
+        PlayField.dimensions.y = height;
         //canvas.drawColor(Color.BLACK);
         if (this.playController != null) {
             var bos = this.playController.getAll();

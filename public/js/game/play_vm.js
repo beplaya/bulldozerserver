@@ -6,10 +6,27 @@ function PlayVm() {
     this.collisioner;
     this.otherPlayer;
     this.balls;
-    this.period = 500;
+    this.period = 33;
+
+
+    this.getMousePos = function(canvasDom, mouseEvent) {
+      var rect = canvasDom.getBoundingClientRect();
+      return {
+        x: mouseEvent.clientX - rect.left,
+        y: mouseEvent.clientY - rect.top
+      };
+    }
 
     this.onCreate = function() {
+        var self = this;
         this.canvas = document.getElementById("myCanvas");
+
+        this.canvas.addEventListener("mouseup", function (e) {
+            var mousePos = self.getMousePos(self.canvas, e);
+            self.playField.onTouchEvent(mousePos.x, mousePos.y);
+        }, false);
+
+
 
         this.playField = new PlayField();
         this.playField.setPlayController(this);
@@ -62,7 +79,7 @@ function PlayVm() {
                 SocketManager.getInstance().sendPositionAndVector(this.player.basicObject.getPosition(), this.player.basicObject.getVector());
                 if (SocketManager.getRoom().getPlayerNumber() == 0) {
                     for (var i=0; i<this.balls.length; i++) {
-                        SocketManager.getInstance().sendBallPosition(this.balls[i].basicObject);
+                        SocketManager.getInstance().sendBallPosition(this.balls[i]);
                     }
                 }
             }
@@ -74,37 +91,38 @@ function PlayVm() {
     }
 
     this.onTargetSelected = function(target) {
+        //console.log(target);
         this.player.basicObject.setTarget(target);
     }
 
     this.onJoinedRoom = function() {
         var playerNumber = SocketManager.getRoom().getPlayerNumber();
         if (playerNumber == 0) {
-            this.player.setPosition(new Point(50, 80));
-            this.otherPlayer.setPosition(new Point(50, 20));
+            this.player.basicObject.setPosition(new Point(50, 80));
+            this.otherPlayer.basicObject.setPosition(new Point(50, 20));
         } else if (playerNumber == 1) {
-            this.player.setPosition(new Point(50, 20));
-            this.otherPlayer.setPosition(new Point(50, 80));
+            this.player.basicObject.setPosition(new Point(50, 20));
+            this.otherPlayer.basicObject.setPosition(new Point(50, 80));
         }
         console.log("||onJoinedRoom--> player number: " + playerNumber + " Room: " + SocketManager.getRoom().id);
     }
 
     this.onReceiveOtherPlayerVectorAndPosition = function(position, vector) {
-        this.otherPlayer.setPosition(position);
-        this.otherPlayer.setVector(vector);
+        this.otherPlayer.basicObject.setPosition(position);
+        this.otherPlayer.basicObject.setVector(vector);
     }
 
     this.onReceiveBallVectorAndPosition = function(ballId, position, vector, ownerNumber) {
         if (SocketManager.getRoom().getPlayerNumber() != 0) {
-            for (var i=0; i<this.balls.length; i++) {
-                if (ballId.equals(this.balls[i].id)) {
-                    this.balls[i].setPosition(position);
-                    this.balls[i].setVector(vector);
-                    this.balls[i].setOwner(ownerNumber);
+            for (var i=0; i<this.basicObjects.length; i++) {
+                if (this.basicObjects[i] instanceof Ball && ballId == this.basicObjects[i].basicObject.id) {
+                    this.basicObjects[i].basicObject.setPosition(position);
+                    this.basicObjects[i].basicObject.setVector(vector);
+                    this.basicObjects[i].setOwner(ownerNumber);
                     if (ownerNumber == SocketManager.getRoom().getPlayerNumber()) {
-                        this.balls[i].getBasicObjectDrawer().setColor(player.getBasicObjectDrawer().getColor());
+                        this.basicObjects[i].basicObject.getBasicObjectDrawer().setColor(this.player.basicObject.getBasicObjectDrawer().getColor());
                     } else {
-                        this.balls[i].getBasicObjectDrawer().setColor(otherPlayer.getBasicObjectDrawer().getColor());
+                        this.basicObjects[i].basicObject.getBasicObjectDrawer().setColor(this.otherPlayer.basicObject.getBasicObjectDrawer().getColor());
                     }
                     return;
                 }

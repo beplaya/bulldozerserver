@@ -1,5 +1,5 @@
 function Vector() {
-    this.position = new Point();
+    this.position = new Point(0, 0);
     this.magnitude = 0;
     this.angle = 0;
 

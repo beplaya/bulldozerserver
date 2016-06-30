@@ -1,7 +1,7 @@
 function BasicObject(id) {
 
     this.id = id;
-    this.position = new Point();
+    this.position = new Point(0,0);
     this.speed = .1;
     this.drag = 0;
     this.hitRadius = 10;
@@ -29,8 +29,10 @@ function BasicObject(id) {
                 boostVY = .9;
             }
         } else {
+            //console.log("@@",this.vector.getVelocityX());
             this.vector = this.target.getVector(PlayField.getAbsolutePosition(this.getPosition()), this.speed);
             this.target = null;
+            //console.log(this.vector);
         }
 
         this.position.x += this.vector.getVelocityX() * boostVX;

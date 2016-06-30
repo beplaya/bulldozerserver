@@ -12,7 +12,7 @@ function SocketManager(){
             for (var i=0; i<SocketManager.listeners.length; i++) {
                 SocketManager.listeners[i].onEvent(SocketManager.Events.JOINED_ROOM, SocketManager.room);
             }
-            console.log(SocketManager.Events.JOINED_ROOM, SocketManager.room.id);
+            //console.log(SocketManager.Events.JOINED_ROOM, SocketManager.room.id);
         });
 
         this.socketIO.on(SocketManager.Events.REC_VECTOR_POSITION, function(jsonObject) {
@@ -22,6 +22,7 @@ function SocketManager(){
         });
 
         this.socketIO.on(SocketManager.Events.REC_BALL_VECTOR_POSITION, function(jsonObject) {
+            //console.log(SocketManager.Events.REC_BALL_VECTOR_POSITION, jsonObject);
             for (var i=0; i<SocketManager.listeners.length; i++) {
                 SocketManager.listeners[i].onEvent(SocketManager.Events.REC_BALL_VECTOR_POSITION, jsonObject);
             }
@@ -31,23 +32,25 @@ function SocketManager(){
 
     this.sendPositionAndVector = function(position, vector) {
         if(SocketManager.room) {
-            this.sendCommand(SocketManager.Events.SEND_VECTOR_POSITION, SocketManager.room.id,
+            this.sendCommand(SocketManager.Events.SEND_VECTOR_POSITION,
+                [SocketManager.room.id,
                 position.x, position.y,
                 vector.magnitude, vector.angle,
-                vector.position.x, vector.position.y);
+                vector.position.x, vector.position.y]);
         }
     }
 
     this.sendBallPosition = function(ball) {
-        var position = ball.getPosition();
-        var vector = ball.getVector();
+        var ballBasicObject = ball.basicObject;
+        var position = ballBasicObject.getPosition();
+        var vector = ballBasicObject.getVector();
         this.sendCommand(SocketManager.Events.SEND_BALL_VECTOR_POSITION,
-            SocketManager.room.id,
-            ball.id,
+            [SocketManager.room.id,
+            ballBasicObject.id,
             position.x, position.y,
             vector.magnitude, vector.angle,
             vector.position.x, vector.position.y,
-            ball.getOwner());
+            ball.getOwner()]);
     }
 
     this.sendCommand = function(methodName, args) {
@@ -60,6 +63,7 @@ function SocketManager(){
                 }
                 csv += args[i];
             }
+            //console.log("emit", methodName, csv);
             this.socketIO.emit(methodName, csv);
         }
     }

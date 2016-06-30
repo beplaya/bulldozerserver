@@ -7,6 +7,7 @@ import java.util.*;
 
 public class ChatLauncher {
     public static final int MAX_ROOM_SIZE = 2;
+    public static final int NUM_ROOMS = 2;
     private static Map<String, List<UUID>> rooms = new HashMap<String, List<UUID>>();
 
     public static void main(String[] args) throws InterruptedException {
@@ -18,7 +19,7 @@ public class ChatLauncher {
 //        config.setHostname("192.168.1.69");
         config.setHostname("10.206.4.56");
         config.setPort(9092);
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < NUM_ROOMS; i++) {
             rooms.put("room" + i, new ArrayList<UUID>());
         }
         final SocketIOServer server = new SocketIOServer(config);
@@ -41,6 +42,16 @@ public class ChatLauncher {
             @Override
             public void onConnect(final SocketIOClient socketIOClient) {
                 log("@@@@@@@@@ Client connected! @@@@@@@@@");
+                Set<String> roomKeys = rooms.keySet();
+                for (String key : roomKeys) {
+                    log("---------------------------");
+                    log("$ " + key);
+                    List<UUID> uuids = rooms.get(key);
+                    for (UUID uid : uuids) {
+                        log(" " + uid.toString());
+                    }
+                    log("---------------------------");
+                }
                 new Thread(new Runnable() {
                     @Override
                     public void run() {

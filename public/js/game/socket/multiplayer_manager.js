@@ -11,11 +11,11 @@ function MultiplayManager(playVm) {
     }
 
     this.onEvent = function(event, o) {
-        if (event == SocketManager.JOINED_ROOM) {
+        if (event == SocketManager.Events.JOINED_ROOM) {
             this.playVm.onJoinedRoom();
-        } else if (event == SocketManager.REC_VECTOR_POSITION) {
+        } else if (event == SocketManager.Events.REC_VECTOR_POSITION) {
             this.onReceiveOtherPlayerVectorAndPosition(o);
-        } else if (event == SocketManager.REC_BALL_VECTOR_POSITION) {
+        } else if (event == SocketManager.Events.REC_BALL_VECTOR_POSITION) {
             this.onReceiveBallVectorAndPosition(o);
         }
     }

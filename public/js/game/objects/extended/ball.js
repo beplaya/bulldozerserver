@@ -7,17 +7,18 @@ function Ball(id, x, y) {
     this.basicObject.position.y = y;
     this.basicObject.drag = 10;
 
-    this.basicObject.collideEventHandler = function(basicObject) {
+    this.basicObject.collideEventHandler = function(onScreenObject, original) {
     }
 
     this.onHitByDozer = function(owner, vector, color) {
+        console.log('onHitByDozer');
         this.basicObject.vector.angle = vector.angle;
         this.basicObject.vector.position.x = vector.position.x;
         this.basicObject.vector.position.y = vector.position.y;
         this.basicObject.vector.magnitude = vector.magnitude * 4;
         this.basicObject.vector.magnitude *= .7;
         this.owner = owner;
-        this.basicObject.basicObjectDrawer.setColor(color);
+        this.basicObject.drawer.setColor(color);
     }
 
     this.getOwner = function() { return this.owner; }

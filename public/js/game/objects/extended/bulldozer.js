@@ -11,18 +11,21 @@ function BullDozer(id) {
     this.basicObject.position.y = 200;
     this.basicObject.drag = .1;
 
-    this.basicObject.collideEventHandler = function(basicObject) {
-        if (basicObject instanceof Ball) {
-            var ball = basicObject;
-            ball.onHitByDozer(this.getOwnerNumber(), vector, drawer.getColor());
+    this.basicObject.collideEventHandler = function(onScreenObject, original) {
+        if (onScreenObject instanceof Ball && original instanceof BullDozer) {
+            console.log('hit ball');
+            var ball = onScreenObject;
+            ball.onHitByDozer(original.getOwnerNumber(),
+                original.basicObject.vector,
+                original.basicObject.drawer.getColor());
         }
     }
 
     this.getOwnerNumber = function() {
         var localNumber = SocketManager.getRoom().getPlayerNumber();
-        if (id.equals(BullDozer.LOCAL_PLAYER)) {
+        if (id == BullDozer.LOCAL_PLAYER) {
             return localNumber;
-        } else if (id.equals(BullDozer.REMOTE_PLAYER)) {
+        } else if (id == BullDozer.REMOTE_PLAYER) {
             return localNumber == 0 ? 1 : 0;
         }
         return -1;

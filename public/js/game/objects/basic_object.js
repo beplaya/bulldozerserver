@@ -50,9 +50,9 @@ function BasicObject(id) {
             this.vector.position.x *= -1;
         }
     }
-    this.onCollide = function(basicObject) {
+    this.onCollide = function(basicObject, original) {
         if(this.collideEventHandler) {
-            this.collideEventHandler(basicObject);
+            this.collideEventHandler(basicObject, original);
         }
     }
 

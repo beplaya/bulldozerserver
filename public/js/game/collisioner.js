@@ -13,8 +13,8 @@ function Collisioner(playController) {
             for (var j = 0; j < bos.length; j++) {
                 if (i != j) {
                     if (this.doesCollide(bos[i], bos[j])) {
-                        bos[i].basicObject.onCollide(bos[j].basicObject);
-                        bos[j].basicObject.onCollide(bos[i].basicObject);
+                        bos[i].basicObject.onCollide(bos[j], bos[i]);
+                        bos[j].basicObject.onCollide(bos[i], bos[i]);
                     }
                 }
             }

@@ -32,7 +32,7 @@ app.controller('socketController', ['$scope','$rootScope', 'socket',
             app.playVm.onPause();
 		});
     $scope.getRoomId = function(){
-        return SocketManager.getRoom() ? SocketManager.getRoom().id + ":" + SocketManager.getRoom().playerNumber : "...";
+        return SocketManager.getRoom() ? "Room: " + SocketManager.getRoom().id + " player number:" + SocketManager.getRoom().playerNumber : "...";
     }
 }]);
 

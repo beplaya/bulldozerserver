@@ -115,13 +115,14 @@ function PlayVm() {
     this.onReceiveBallVectorAndPosition = function(ballId, position, vector, ownerNumber) {
         if (SocketManager.getRoom().getPlayerNumber() != 0) {
             for (var i=0; i<this.basicObjects.length; i++) {
-                if (this.basicObjects[i] instanceof Ball && ballId == this.basicObjects[i].basicObject.id) {
+                if (this.basicObjects[i] instanceof Ball &&
+                        ballId == this.basicObjects[i].basicObject.id) {
                     this.basicObjects[i].basicObject.setPosition(position);
                     this.basicObjects[i].basicObject.setVector(vector);
                     this.basicObjects[i].setOwner(ownerNumber);
                     if (ownerNumber == SocketManager.getRoom().getPlayerNumber()) {
                         this.basicObjects[i].basicObject.getBasicObjectDrawer().setColor(this.player.basicObject.getBasicObjectDrawer().getColor());
-                    } else {
+                    } else if(ownerNumber !=-1) {
                         this.basicObjects[i].basicObject.getBasicObjectDrawer().setColor(this.otherPlayer.basicObject.getBasicObjectDrawer().getColor());
                     }
                     return;

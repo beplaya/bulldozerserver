@@ -13,7 +13,6 @@ function BullDozer(id) {
 
     this.basicObject.collideEventHandler = function(onScreenObject, original) {
         if (onScreenObject instanceof Ball && original instanceof BullDozer) {
-            console.log('hit ball');
             var ball = onScreenObject;
             ball.onHitByDozer(original.getOwnerNumber(),
                 original.basicObject.vector,

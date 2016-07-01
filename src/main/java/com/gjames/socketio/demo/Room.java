@@ -36,14 +36,14 @@ public class Room {
                                         SocketIOServer server,
                                         String eventString,
                                         String data) {
-        Iterator<SocketIOClient> iterator = server.getAllClients().iterator();
         for (int i = 0; i < size; i++) {
-            String uuid = players.get(i);
+            Iterator<SocketIOClient> iterator = server.getAllClients().iterator();
             while (iterator.hasNext()) {
                 SocketIOClient client = iterator.next();
                 String playerId = client.getSessionId().toString();
-                if (playerId.equals(uuid)
-                        && !playerId.equals(socketIOClient.getSessionId())) {
+                String senderPlayerId = socketIOClient.getSessionId().toString();
+                if (playerId.equals(players.get(i))
+                        && !playerId.equals(senderPlayerId)) {
                     client.sendEvent(eventString, data);
                 }
             }

@@ -12,7 +12,6 @@ function SocketManager(){
             for (var i=0; i<SocketManager.listeners.length; i++) {
                 SocketManager.listeners[i].onEvent(SocketManager.Events.JOINED_ROOM, SocketManager.room);
             }
-            //console.log(SocketManager.Events.JOINED_ROOM, SocketManager.room.id);
         });
 
         this.socketIO.on(SocketManager.Events.REC_VECTOR_POSITION, function(jsonObject) {
@@ -22,7 +21,7 @@ function SocketManager(){
         });
 
         this.socketIO.on(SocketManager.Events.REC_BALL_VECTOR_POSITION, function(jsonObject) {
-            //console.log(SocketManager.Events.REC_BALL_VECTOR_POSITION, jsonObject);
+            console.log(SocketManager.Events.REC_BALL_VECTOR_POSITION, jsonObject);
             for (var i=0; i<SocketManager.listeners.length; i++) {
                 SocketManager.listeners[i].onEvent(SocketManager.Events.REC_BALL_VECTOR_POSITION, jsonObject);
             }

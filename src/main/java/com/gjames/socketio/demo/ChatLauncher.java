@@ -118,7 +118,7 @@ public class ChatLauncher {
                 if (!room.containsPlayer(playerId)) {
                     Room.RoomJoin roomJoin = room.joinRoom(playerId);
                     if (roomJoin != null) {
-                        logRoom(room);
+                        //logRoom(room);
                         return roomJoin;
                     }
                 }
@@ -130,7 +130,7 @@ public class ChatLauncher {
                 if (!room.containsPlayer(playerId)) {
                     Room.RoomJoin roomJoin = room.joinRoom(playerId);
                     if (roomJoin != null) {
-                        logRoom(room);
+                        //logRoom(room);
                         return roomJoin;
                     }
                 }

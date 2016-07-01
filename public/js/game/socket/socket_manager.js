@@ -104,7 +104,7 @@ SocketManager.socketId = "";
 SocketManager.listeners = [];
 
 SocketManager.registerListener = function(listener) {
-    for (var i=1; i<SocketManager.listeners.length; i++) {
+    for (var i=0; i<SocketManager.listeners.length; i++) {
         if(SocketManager.listeners[i] == listener){
             return;
         }

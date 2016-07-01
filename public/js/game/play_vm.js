@@ -18,6 +18,9 @@ function PlayVm() {
 
     this.onCreate = function() {
         var self = this;
+        SocketManager.clearListeners();
+        SocketManager.registerListener(new MultiplayManager(this));
+
         this.canvas = document.getElementById("myCanvas");
         this.isStartingGame = false;
         this.isGameStarted = false;
@@ -26,8 +29,6 @@ function PlayVm() {
             var mousePos = self.getMousePos(self.canvas, e);
             self.playField.onTouchEvent(mousePos.x, mousePos.y);
         }, false);
-
-
 
         this.playField = new PlayField();
         this.playField.setPlayController(this);
@@ -50,7 +51,6 @@ function PlayVm() {
         this.balls.push(new Ball(4, 60, 50));
         this.balls.push(new Ball(5, 80, 50));
         this.basicObjects = this.basicObjects.concat(this.balls);
-        SocketManager.registerListener(new MultiplayManager(this));
     }
 
     this.onResume = function() {
@@ -66,13 +66,15 @@ function PlayVm() {
         }
     }
 
-    this.onDraw = function(){
-        var ctx = this.canvas.getContext("2d");
+    this.onDraw = function(canvas){
+        var ctx = canvas.getContext("2d");
         if(this.isStartingGame) {
             var point = new Point(50, 50);
             var absPosition = PlayField.getAbsolutePosition(point);
             ctx.font = "30px Arial";
-            ctx.fillText("Starting...",absPosition.x, absPosition.y);
+            ctx.fillStyle = "red";
+            ctx.textAlign = "center";
+            ctx.fillText("Starting Game...", canvas.width/2, canvas.height/2);
         }
     }
 
@@ -108,6 +110,8 @@ function PlayVm() {
                 }
             }
         }
+        this.onDraw(this.canvas);
+
     }
 
     this.getAll = function() {

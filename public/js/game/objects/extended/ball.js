@@ -6,6 +6,7 @@ function Ball(id, x, y) {
     this.basicObject.position.x = x;
     this.basicObject.position.y = y;
     this.basicObject.drag = 10;
+    this.basicObject.oobDrag = -.2;
 
     this.basicObject.collideEventHandler = function(onScreenObject, original) {
     }

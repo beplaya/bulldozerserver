@@ -8,6 +8,8 @@ function BasicObject(id) {
     this.target;
     this.drawer = new BasicObjectDrawer(this, "#fff");
     this.vector = new Vector();
+    this.dragOffset = 5;
+    this.oobDrag = -.00001;
 
     this.setTarget = function(target) {
         this.target = target;
@@ -38,17 +40,35 @@ function BasicObject(id) {
         this.position.x += this.vector.getVelocityX() * boostVX;
         this.position.y += this.vector.getVelocityY() * boostVY;
 
-        this.getVector().magnitude *= (1 - (this.drag / 100));
+        var effectiveDrag = this.oobDrag;
+
+        if(    this.position.x > this.dragOffset
+            && this.position.x <= (100-this.dragOffset)
+            && this.position.y > this.dragOffset
+            && this.position.y < (100-this.dragOffset)){
+            effectiveDrag = this.drag;
+        }
+        this.getVector().magnitude *= Math.abs((1 - (effectiveDrag / 100)));
     }
 
 
     this.onWallCollide = function(wall) {
         this.target = null;
-        if (wall == Collisioner.Wall.TOP || wall == Collisioner.Wall.BOTTOM) {
-            this.vector.position.y *= -1;
-        } else if (wall == Collisioner.Wall.LEFT || wall == Collisioner.Wall.RIGHT) {
-            this.vector.position.x *= -1;
+
+        if (wall == Collisioner.Wall.TOP){
+            this.position.y = 100;
+        } else if(wall == Collisioner.Wall.BOTTOM) {
+            this.position.y = 0;
+        } else if (wall == Collisioner.Wall.LEFT) {
+            this.position.x = 100;
+        } else if (wall == Collisioner.Wall.RIGHT) {
+            this.position.x = 0;
         }
+//        if (wall == Collisioner.Wall.TOP || wall == Collisioner.Wall.BOTTOM) {
+//            this.vector.position.y *= -1;
+//        } else if (wall == Collisioner.Wall.LEFT || wall == Collisioner.Wall.RIGHT) {
+//            this.vector.position.x *= -1;
+//        }
     }
     this.onCollide = function(basicObject, original) {
         if(this.collideEventHandler) {

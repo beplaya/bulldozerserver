@@ -24,7 +24,7 @@ function Collisioner(playController) {
     this.detectWall = function(onScreenObject) {
         var basicObject = onScreenObject.basicObject;
         var percentPosition = basicObject.getPosition();
-        var offset = 5;
+        var offset = -15;
         if (percentPosition.x < offset) {
             return Collisioner.Wall.LEFT;
         } else if (percentPosition.y < offset) {

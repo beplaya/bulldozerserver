@@ -15,6 +15,8 @@ app.controller('socketController', ['$scope','$rootScope', 'socket',
     $scope.connected = false;
     $scope.socket.on('connect', function() {
             $scope.connected = true;
+            app.playVm = new PlayVm();
+            app.playVm.onCreate();
             SocketManager.getInstance().initSocket($scope.socket);
 
             SocketManager.isConnected = true;

@@ -7,20 +7,20 @@ import java.util.*;
 
 public class ChatLauncher {
     public static final int MAX_ROOM_SIZE = 2;
-    public static final int NUM_ROOMS = 2;
-    private static Map<String, List<UUID>> rooms = new HashMap<String, List<UUID>>();
+    public static final int NUM_ROOMS = 20;
+    //    private static Map<String, List<UUID>> rooms = new HashMap<String, List<UUID>>();
+    private static List<Room> rooms = new ArrayList<Room>();
 
     public static void main(String[] args) throws InterruptedException {
         Configuration config = new Configuration();
         SocketConfig sockConfig = new SocketConfig();
         sockConfig.setReuseAddress(true);
         config.setSocketConfig(sockConfig);
-        //config.setOrigin("*");
-//        config.setHostname("192.168.1.69");
+        //config.setHostname("192.168.1.69");
         config.setHostname("10.206.4.56");
         config.setPort(9092);
         for (int i = 0; i < NUM_ROOMS; i++) {
-            rooms.put("room" + i, new ArrayList<UUID>());
+            rooms.add(new Room("room" + i, MAX_ROOM_SIZE));
         }
         final SocketIOServer server = new SocketIOServer(config);
 
@@ -42,20 +42,10 @@ public class ChatLauncher {
             @Override
             public void onConnect(final SocketIOClient socketIOClient) {
                 log("@@@@@@@@@ Client connected! @@@@@@@@@");
-                Set<String> roomKeys = rooms.keySet();
-                for (String key : roomKeys) {
-                    log("---------------------------");
-                    log("$ " + key);
-                    List<UUID> uuids = rooms.get(key);
-                    for (UUID uid : uuids) {
-                        log(" " + uid.toString());
-                    }
-                    log("---------------------------");
-                }
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        RoomJoin roomJoin = assignToRoom(socketIOClient);
+                        Room.RoomJoin roomJoin = assignToRoom(socketIOClient);
                         socketIOClient.sendEvent("JOINED_ROOM", "{\"roomId\":\"" + roomJoin.roomId
                                 + "\", \"playerNumber\": \"" + roomJoin.playerNumber + "\"}");
                     }
@@ -69,7 +59,7 @@ public class ChatLauncher {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        removeFromRoom(socketIOClient.getSessionId());
+                        removeFromRoom(socketIOClient.getSessionId().toString());
                     }
                 }).start();
             }
@@ -81,16 +71,10 @@ public class ChatLauncher {
         server.stop();
     }
 
-    private static void removeFromRoom(UUID sessionId) {
-        Set<String> roomKeys = rooms.keySet();
-        for (String rk : roomKeys) {
-            int roomSize = rooms.get(rk).size();
-            for (int i = 0; i < roomSize; i++) {
-                if (rooms.get(rk).get(i).equals(sessionId)) {
-                    rooms.get(rk).remove(i);
-                    removeFromRoom(sessionId);
-                    return;
-                }
+    private static void removeFromRoom(String playerId) {
+        for (Room room : rooms) {
+            if (room.containsPlayer(playerId)) {
+                room.leaveRoom(playerId);
             }
         }
     }
@@ -102,65 +86,70 @@ public class ChatLauncher {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String roomKey = findRoomForUUID(socketIOClient.getSessionId());
-                List<UUID> clientIds = rooms.get(roomKey);
-                Iterator<SocketIOClient> iterator = server.getAllClients().iterator();
-                for (UUID uuid : clientIds) {
-                    SocketIOClient client = iterator.next();
-                    if (client.getSessionId().equals(uuid)
-                            && !client.getSessionId().equals(socketIOClient.getSessionId())) {
-                        client.sendEvent(eventString, data);
+                String roomKey = findRoomForUUID(socketIOClient.getSessionId().toString());
+                for (Room room : rooms) {
+                    if (room.getRoomId().equals(roomKey)) {
+                        room.sendEventToParticipants(socketIOClient, server, eventString, data);
                     }
                 }
+
             }
         }).start();
     }
 
-    private static void log(String s) {
+    public static void log(String s) {
         System.out.println(s);
     }
 
-    private static String findRoomForUUID(UUID sessionId) {
-        Set<String> roomKeys = rooms.keySet();
-        for (String rk : roomKeys) {
-            List<UUID> uuids = rooms.get(rk);
-            for (UUID uid : uuids) {
-                if (uid.equals(sessionId)) {
-                    return rk;
+    private static String findRoomForUUID(String playerId) {
+        for (Room room : rooms) {
+            if (room.containsPlayer(playerId)) {
+                return room.getRoomId();
+            }
+        }
+        return null;
+    }
+
+    private static Room.RoomJoin assignToRoom(SocketIOClient socketIOClient) {
+        String playerId = socketIOClient.getSessionId().toString();
+
+        for (Room room : rooms) {
+            if (room.hasPlayers() && room.isNotFull()) {
+                if (!room.containsPlayer(playerId)) {
+                    Room.RoomJoin roomJoin = room.joinRoom(playerId);
+                    if (roomJoin != null) {
+                        logRoom(room);
+                        return roomJoin;
+                    }
+                }
+            }
+        }
+        for (Room room : rooms) {
+
+            if (room.isNotFull()) {
+                if (!room.containsPlayer(playerId)) {
+                    Room.RoomJoin roomJoin = room.joinRoom(playerId);
+                    if (roomJoin != null) {
+                        logRoom(room);
+                        return roomJoin;
+                    }
                 }
             }
         }
         return null;
     }
 
-    private static RoomJoin assignToRoom(SocketIOClient socketIOClient) {
-        Set<String> roomKeys = rooms.keySet();
-        for (String rk : roomKeys) {
-            if (rooms.get(rk).size() > 0) {
-                if (!rooms.get(rk).contains(socketIOClient.getSessionId())) {
-                    rooms.get(rk).add(socketIOClient.getSessionId());
-                    return new RoomJoin(rk, (rooms.get(rk).size() - 1));
-                }
-            }
-        }
-        for (String rk : roomKeys) {
-            if (rooms.get(rk).size() < MAX_ROOM_SIZE) {
-                if (!rooms.get(rk).contains(socketIOClient.getSessionId())) {
-                    rooms.get(rk).add(socketIOClient.getSessionId());
-                    return new RoomJoin(rk, (rooms.get(rk).size() - 1));
-                }
-            }
-        }
-        return null;
+    private static void logRoom(Room room) {
+        log(":room.getRoomId()"
+                + " |  room.isNotFull()"
+                + " |  room.hasPlayers()"
+                + " |  room.isEmpty()"
+                + " |  room.isNotFull()");
+        log(":" + room.getRoomId()
+                + " | " + room.isNotFull()
+                + " | " + room.hasPlayers()
+                + " | " + room.isEmpty()
+                + " | " + room.isNotFull());
     }
 
-    public static class RoomJoin {
-        public final String roomId;
-        public final int playerNumber;
-
-        public RoomJoin(String roomId, int playerNumber) {
-            this.roomId = roomId;
-            this.playerNumber = playerNumber;
-        }
-    }
 }

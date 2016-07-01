@@ -60,10 +60,12 @@ public class Room {
     }
 
     public RoomJoin joinRoom(String playerId) {
-        for (int i = 0; i < size; i++) {
-            if (isPlayerSlotEmptyByIndex(i)) {
-                players.put(i, playerId);
-                return new RoomJoin(roomId, i);
+        if (!isFull()) {
+            for (int i = 0; i < size; i++) {
+                if (isPlayerSlotEmptyByIndex(i)) {
+                    players.put(i, playerId);
+                    return new RoomJoin(roomId, i);
+                }
             }
         }
         return null;
@@ -96,6 +98,21 @@ public class Room {
 
     public boolean isNotFull() {
         return !isFull();
+    }
+
+    public void notifyClientsRoomIsFull(SocketIOServer server) {
+        for (int i = 0; i < size; i++) {
+            Iterator<SocketIOClient> iterator = server.getAllClients().iterator();
+            while (iterator.hasNext()) {
+                SocketIOClient client = iterator.next();
+                String playerId = client.getSessionId().toString();
+                if (playerId.equals(players.get(i))) {
+                    long currentTime = Calendar.getInstance().getTimeInMillis();
+                    int delay = 3000;
+                    client.sendEvent("GAME_ROOM_FILLED", currentTime + "," + delay);
+                }
+            }
+        }
     }
 
     public static class RoomJoin {

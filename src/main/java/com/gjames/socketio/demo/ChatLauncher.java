@@ -10,6 +10,7 @@ public class ChatLauncher {
     public static final int NUM_ROOMS = 20;
     //    private static Map<String, List<UUID>> rooms = new HashMap<String, List<UUID>>();
     private static List<Room> rooms = new ArrayList<Room>();
+    private static SocketIOServer server;
 
     public static void main(String[] args) throws InterruptedException {
         Configuration config = new Configuration();
@@ -22,7 +23,7 @@ public class ChatLauncher {
         for (int i = 0; i < NUM_ROOMS; i++) {
             rooms.add(new Room("room" + i, MAX_ROOM_SIZE));
         }
-        final SocketIOServer server = new SocketIOServer(config);
+        server = new SocketIOServer(config);
 
         server.addEventListener("SEND_BALL_VECTOR_POSITION", String.class, new DataListener<String>() {
             @Override
@@ -117,8 +118,12 @@ public class ChatLauncher {
             if (room.hasPlayers() && room.isNotFull()) {
                 if (!room.containsPlayer(playerId)) {
                     Room.RoomJoin roomJoin = room.joinRoom(playerId);
+
                     if (roomJoin != null) {
                         //logRoom(room);
+                        if(room.isFull()){
+                            room.notifyClientsRoomIsFull(server);
+                        }
                         return roomJoin;
                     }
                 }

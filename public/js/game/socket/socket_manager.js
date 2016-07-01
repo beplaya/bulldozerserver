@@ -21,9 +21,17 @@ function SocketManager(){
         });
 
         this.socketIO.on(SocketManager.Events.REC_BALL_VECTOR_POSITION, function(jsonObject) {
-            console.log(SocketManager.Events.REC_BALL_VECTOR_POSITION, jsonObject);
+            //console.log(SocketManager.Events.REC_BALL_VECTOR_POSITION, jsonObject);
             for (var i=0; i<SocketManager.listeners.length; i++) {
                 SocketManager.listeners[i].onEvent(SocketManager.Events.REC_BALL_VECTOR_POSITION, jsonObject);
+            }
+        });
+
+        this.socketIO.on(SocketManager.Events.GAME_ROOM_FILLED, function(csv) {
+            console.log("!@@@@@GAME_ROOM_FILLED@@@@@!");
+
+            for (var i=0; i<SocketManager.listeners.length; i++) {
+                SocketManager.listeners[i].onEvent(SocketManager.Events.GAME_ROOM_FILLED, csv);
             }
         });
         //
@@ -84,7 +92,8 @@ SocketManager.Events = {
     SEND_VECTOR_POSITION : "SEND_VECTOR_POSITION",
     JOINED_ROOM : "JOINED_ROOM",
     SEND_BALL_VECTOR_POSITION : "SEND_BALL_VECTOR_POSITION",
-    REC_BALL_VECTOR_POSITION : "REC_BALL_VECTOR_POSITION"
+    REC_BALL_VECTOR_POSITION : "REC_BALL_VECTOR_POSITION",
+    GAME_ROOM_FILLED : "GAME_ROOM_FILLED"
 }
 
 SocketManager.isConnected = false;
@@ -95,6 +104,11 @@ SocketManager.socketId = "";
 SocketManager.listeners = [];
 
 SocketManager.registerListener = function(listener) {
+    for (var i=1; i<SocketManager.listeners.length; i++) {
+        if(SocketManager.listeners[i] == listener){
+            return;
+        }
+    }
     SocketManager.listeners.push(listener);
 }
 

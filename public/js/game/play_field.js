@@ -7,10 +7,11 @@ function PlayField() {
     }
 
     this.onTouchEvent = function(x, y) {
-        x = 100*x/PlayField.dimensions.x;
-        y = 100*y/PlayField.dimensions.y;
-        //console.log(x, y);
-        this.playController.onTargetSelected(new Target(x, y));
+        if(this.playController.gameIsStarted()) {
+            x = 100*x/PlayField.dimensions.x;
+            y = 100*y/PlayField.dimensions.y;
+            this.playController.onTargetSelected(new Target(x, y));
+        }
     }
 
     this.onDraw = function(canvas, width, height) {

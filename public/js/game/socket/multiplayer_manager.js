@@ -11,14 +11,28 @@ function MultiplayManager(playVm) {
     }
 
     this.onEvent = function(event, o) {
+        var self = this;
         if (event == SocketManager.Events.JOINED_ROOM) {
             this.playVm.onJoinedRoom();
         } else if (event == SocketManager.Events.REC_VECTOR_POSITION) {
-            console.log(event);
+            //console.log(event);
             this.onReceiveOtherPlayerVectorAndPosition(o);
         } else if (event == SocketManager.Events.REC_BALL_VECTOR_POSITION) {
             this.onReceiveBallVectorAndPosition(o);
+        } else if(event == SocketManager.Events.GAME_ROOM_FILLED) {
+            var args = o.split(',');
+            var localTime = new Date().getTime();
+            var serverTime = args[0]*1;
+            var delay = args[1]*1;
+            var timeDiff = localTime - serverTime;
+            var fixedDelay = delay + timeDiff;
+            console.log("Start game in ", fixedDelay, "ms");
+            self.playVm.startingGame();
+            setTimeout(function(){
+                self.playVm.startGame();
+            }, fixedDelay)
         }
+        return "mmm";
     }
 
     this.onReceiveBallVectorAndPosition = function(o) {

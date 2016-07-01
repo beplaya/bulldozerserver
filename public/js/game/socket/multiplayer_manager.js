@@ -26,7 +26,7 @@ function MultiplayManager(playVm) {
             var serverTime = args[0]*1;
             var delay = args[1]*1;
             var timeDiff = localTime - serverTime;
-            var fixedDelay = delay + timeDiff;
+            var fixedDelay = delay - timeDiff;
             console.log("Start game in ", fixedDelay, "ms");
             self.playVm.startingGame();
             setTimeout(function(){

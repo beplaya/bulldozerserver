@@ -21,13 +21,20 @@ function PlayVm() {
         SocketManager.clearListeners();
         SocketManager.registerListener(new MultiplayManager(this));
 
+        this.winner = false;
         this.canvas = document.getElementById("myCanvas");
         this.isStartingGame = false;
         this.isGameStarted = false;
 
         this.canvas.addEventListener("mouseup", function (e) {
-            var mousePos = self.getMousePos(self.canvas, e);
-            self.playField.onTouchEvent(mousePos.x, mousePos.y);
+            if(self.winner === false) {
+                var mousePos = self.getMousePos(self.canvas, e);
+                self.playField.onTouchEvent(mousePos.x, mousePos.y);
+            } else {
+                self.onPause()
+                self.onCreate();
+                self.onResume();
+            }
         }, false);
 
         this.playField = new PlayField();
@@ -68,39 +75,68 @@ function PlayVm() {
 
     this.onDraw = function(canvas){
         var ctx = canvas.getContext("2d");
+        var point = new Point(50, 50);
+        var absPosition = PlayField.getAbsolutePosition(point);
+        ctx.font = "30px Arial";
+        ctx.fillStyle = "red";
+        ctx.textAlign = "center";
         if(this.isStartingGame) {
-            var point = new Point(50, 50);
-            var absPosition = PlayField.getAbsolutePosition(point);
-            ctx.font = "30px Arial";
-            ctx.fillStyle = "red";
-            ctx.textAlign = "center";
             ctx.fillText("Starting Game...", canvas.width/2, canvas.height/2);
+        }
+        if(this.winner !== false) {
+            var msg = "You lost!";
+            if(SocketManager.getRoom().getPlayerNumber() == this.winner){
+                msg = "You won!";
+                ctx.fillStyle = "green";
+            }
+            ctx.fillText(msg, canvas.width/2, canvas.height/2);
         }
     }
 
     this.startingGame = function() {
         console.log("...Game starting...");
-
+        this.winner = false;
         this.isStartingGame = true;
     }
 
     this.startGame = function() {
         console.log("Game started!!");
+        this.winner = false;
         this.isGameStarted = true;
         this.isStartingGame = false;
     }
 
+    this.ticks = 0;
+    this.tickMax = 10000;
     this.onTimerTick = function() {
+        this.ticks++;
+        if(this.ticks > this.tickMax){
+            this.ticks = 0;
+        }
         if (SocketManager.isConnected) {
+
             this.playField.onDraw(this.canvas, this.canvas.width, this.canvas.height);
+            for (var i=0; i<this.basicObjects.length; i++) {
+                this.basicObjects[i].basicObject.update();
+            }
 
             if(this.gameIsStarted()) {
-                for (var i=0; i<this.basicObjects.length; i++) {
-                    this.basicObjects[i].basicObject.update();
-                }
 
-                if(SocketManager.getRoom()) {
+                if(this.winner === false) {
                     this.collisioner.update();
+                    this.winner = this.checkWin();
+                    this.ticks = 0;
+                }
+                if(this.winner !== false && this.ticks % 10 == 0){
+                    for (var i=0; i<this.basicObjects.length; i++) {
+                        this.basicObjects[i].basicObject.setTarget(new Target(
+                                Math.random()*100 + Math.sin(this.ticks/this.tickMax)*50,
+                                Math.random()*100 + Math.sin(this.ticks/this.tickMax)*50));
+                        this.basicObjects[i].basicObject.speed = 3;
+                        this.basicObjects[i].basicObject.drag = 0;
+                    }
+                }
+                if(SocketManager.getRoom() && this.winner === false) {
                     SocketManager.getInstance().sendPositionAndVector(this.player.basicObject.getPosition(), this.player.basicObject.getVector());
                     if (SocketManager.getRoom().getPlayerNumber() == 0) {
                         for (var i=0; i<this.balls.length; i++) {
@@ -113,6 +149,23 @@ function PlayVm() {
         this.onDraw(this.canvas);
 
     }
+
+    this.checkWin = function(){
+        var winner = false;
+        var bos = this.basicObjects;
+
+        for (var i = 0; i < bos.length; i++) {
+            if(bos[i] instanceof Ball) {
+                var ball = bos[i];
+                if(!winner && ball.isOwned()) {
+                    winner = ball.getOwner();
+                } else if(winner != ball.getOwner()){
+                    return false;
+                }
+            }
+        }
+        return winner;
+    };
 
     this.getAll = function() {
         return this.basicObjects;

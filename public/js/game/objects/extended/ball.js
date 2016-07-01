@@ -23,4 +23,6 @@ function Ball(id, x, y) {
 
     this.getOwner = function() { return this.owner; }
     this.setOwner = function(owner) { this.owner = owner; }
+
+    this.isOwned = function() { return this.owner != -1;}
 }

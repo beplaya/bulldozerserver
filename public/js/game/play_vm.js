@@ -27,13 +27,17 @@ function PlayVm() {
         this.isGameStarted = false;
 
         this.canvas.addEventListener("mouseup", function (e) {
-            if(self.winner === false) {
-                var mousePos = self.getMousePos(self.canvas, e);
-                self.playField.onTouchEvent(mousePos.x, mousePos.y);
-            } else {
+            if(self.winner !== false) {
                 self.onPause()
                 self.onCreate();
                 self.onResume();
+            }
+        }, false);
+
+        this.canvas.addEventListener("mousemove", function (e) {
+            if(self.winner === false) {
+                var mousePos = self.getMousePos(self.canvas, e);
+                self.playField.onTouchEvent(mousePos.x, mousePos.y);
             }
         }, false);
 

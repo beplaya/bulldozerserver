@@ -100,6 +100,12 @@ public class Room {
         return !isFull();
     }
 
+    public void onReceivedBallPosition(String sessionId, String ballPosition) {
+    }
+
+    public void onReceivedPlayerPosition(String sessionId, String ballPosition) {
+    }
+
     public void notifyClientsRoomIsFull(SocketIOServer server) {
         for (int i = 0; i < size; i++) {
             Iterator<SocketIOClient> iterator = server.getAllClients().iterator();

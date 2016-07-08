@@ -21,9 +21,14 @@ function SocketManager(){
         });
 
         this.socketIO.on(SocketManager.Events.REC_BALL_VECTOR_POSITION, function(jsonObject) {
-            //console.log(SocketManager.Events.REC_BALL_VECTOR_POSITION, jsonObject);
             for (var i=0; i<SocketManager.listeners.length; i++) {
                 SocketManager.listeners[i].onEvent(SocketManager.Events.REC_BALL_VECTOR_POSITION, jsonObject);
+            }
+        });
+
+        this.socketIO.on(SocketManager.Events.WIN, function(jsonObject) {
+            for (var i=0; i<SocketManager.listeners.length; i++) {
+                SocketManager.listeners[i].onEvent(SocketManager.Events.WIN, jsonObject);
             }
         });
 
@@ -93,7 +98,8 @@ SocketManager.Events = {
     JOINED_ROOM : "JOINED_ROOM",
     SEND_BALL_VECTOR_POSITION : "SEND_BALL_VECTOR_POSITION",
     REC_BALL_VECTOR_POSITION : "REC_BALL_VECTOR_POSITION",
-    GAME_ROOM_FILLED : "GAME_ROOM_FILLED"
+    GAME_ROOM_FILLED : "GAME_ROOM_FILLED",
+    WIN : "WIN"
 }
 
 SocketManager.isConnected = false;

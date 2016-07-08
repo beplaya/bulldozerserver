@@ -29,6 +29,11 @@ public class ChatLauncher {
             @Override
             public void onData(SocketIOClient socketIOClient, String ballRecVectorPosition, AckRequest ackRequest) throws Exception {
                 sendEventToClientsInSameRoom(socketIOClient, ballRecVectorPosition, "REC_BALL_VECTOR_POSITION", server);
+                Room room = findRoomForUUID(socketIOClient.getSessionId().toString());
+                if (room != null) {
+                    room.onReceivedBallPosition(socketIOClient.getSessionId(), ballRecVectorPosition);
+                    checkForWinner(room);
+                }
             }
         });
 
@@ -36,6 +41,11 @@ public class ChatLauncher {
             @Override
             public void onData(SocketIOClient socketIOClient, String recVectorPosition, AckRequest ackRequest) throws Exception {
                 sendEventToClientsInSameRoom(socketIOClient, recVectorPosition, "REC_VECTOR_POSITION", server);
+                Room room = findRoomForUUID(socketIOClient.getSessionId().toString());
+                if (room != null) {
+                    room.onReceivedPlayerPosition(socketIOClient.getSessionId(), recVectorPosition);
+                    checkForWinner(room);
+                }
             }
         });
 
@@ -72,6 +82,11 @@ public class ChatLauncher {
         server.stop();
     }
 
+    private static void checkForWinner(Room room) {
+        //TODO
+
+    }
+
     private static void removeFromRoom(String playerId) {
         for (Room room : rooms) {
             if (room.containsPlayer(playerId)) {
@@ -87,7 +102,7 @@ public class ChatLauncher {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String roomKey = findRoomForUUID(socketIOClient.getSessionId().toString());
+                String roomKey = findRoomIdForUUID(socketIOClient.getSessionId().toString());
                 for (Room room : rooms) {
                     if (room.getRoomId().equals(roomKey)) {
                         room.sendEventToParticipants(socketIOClient, server, eventString, data);
@@ -102,7 +117,16 @@ public class ChatLauncher {
         System.out.println(s);
     }
 
-    private static String findRoomForUUID(String playerId) {
+    private static Room findRoomForUUID(String playerId) {
+        for (Room room : rooms) {
+            if (room.containsPlayer(playerId)) {
+                return room;
+            }
+        }
+        return null;
+    }
+
+    private static String findRoomIdForUUID(String playerId) {
         for (Room room : rooms) {
             if (room.containsPlayer(playerId)) {
                 return room.getRoomId();
@@ -121,7 +145,7 @@ public class ChatLauncher {
 
                     if (roomJoin != null) {
                         //logRoom(room);
-                        if(room.isFull()){
+                        if (room.isFull()) {
                             room.notifyClientsRoomIsFull(server);
                         }
                         return roomJoin;

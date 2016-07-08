@@ -154,21 +154,13 @@ function PlayVm() {
 
     }
 
-    this.checkWin = function(){
-        var winner = false;
-        var bos = this.basicObjects;
+    this.onWin = function(winner){
+        this.winner = winner;
+        this.winHappened = true;
+    };
 
-        for (var i = 0; i < bos.length; i++) {
-            if(bos[i] instanceof Ball) {
-                var ball = bos[i];
-                if(!winner && ball.isOwned()) {
-                    winner = ball.getOwner();
-                } else if(winner != ball.getOwner()){
-                    return false;
-                }
-            }
-        }
-        return winner;
+    this.checkWin = function(){
+        return this.winHappened ? this.winner : false;
     };
 
     this.getAll = function() {

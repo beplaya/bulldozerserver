@@ -31,7 +31,7 @@ public class ChatLauncher {
                 sendEventToClientsInSameRoom(socketIOClient, ballRecVectorPosition, "REC_BALL_VECTOR_POSITION", server);
                 Room room = findRoomForUUID(socketIOClient.getSessionId().toString());
                 if (room != null) {
-                    room.onReceivedBallPosition(socketIOClient.getSessionId(), ballRecVectorPosition);
+                    room.onReceivedBallPosition(socketIOClient.getSessionId().toString(), ballRecVectorPosition);
                     checkForWinner(room);
                 }
             }
@@ -43,7 +43,7 @@ public class ChatLauncher {
                 sendEventToClientsInSameRoom(socketIOClient, recVectorPosition, "REC_VECTOR_POSITION", server);
                 Room room = findRoomForUUID(socketIOClient.getSessionId().toString());
                 if (room != null) {
-                    room.onReceivedPlayerPosition(socketIOClient.getSessionId(), recVectorPosition);
+                    room.onReceivedPlayerPosition(socketIOClient.getSessionId().toString(), recVectorPosition);
                     checkForWinner(room);
                 }
             }
